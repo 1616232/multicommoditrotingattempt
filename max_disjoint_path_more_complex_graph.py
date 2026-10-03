@@ -1,10 +1,11 @@
 from pulp import *
 
-edges = [(0, 1, 1), (1, 2, 1)]
-edges_without_capacity = [(0, 1), (1, 2)]
+edges = [(0, 1, 1), (0, 2, 1), (0, 3, 1), (1,4,1), (2,4,1), (3,4,1)]
+edges_without_capacity = list(map(lambda e: (e[0], e[1]), edges))
+print(edges_without_capacity)
 # edges = []
-commodoties = [(0, 2), (1, 2)]  # source, destination
-vertices = list(range(0, 3))
+commodoties = [(0, 4)]  # source, destination
+vertices = list(range(0, 5))
 
 sum_incoming = [[0] * len(vertices)] * len(commodoties)
 sum_outgoing = [[0] * len(vertices)] * len(commodoties)
