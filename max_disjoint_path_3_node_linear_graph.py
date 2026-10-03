@@ -48,7 +48,12 @@ for j in range(len(vertices)):
 for k in range(len(commodoties)):
     model+=  lpSum(x[(v,commodoties[k][1],k)] for v in vertices if (v,commodoties[k][1]) in edges_without_capacity) == lpSum(x[(commodoties[k][0],v,k)] for v in vertices if (commodoties[k][0],v) in edges_without_capacity)
 
-#model += (lpSum(sum_incoming[0][2]))
+# to enforce vertex disjoint paths, for each commodity, inflow into a node is capped at 1 unless the node is the destination
+for k in range(len(commodoties)):
+    for v in range(len(vertices)):
+        if commodoties[k][1] !=v:
+            model += lpSum(x[(i,v,k)] for i in vertices if ((i,v) in edges_without_capacity) or ((v,i) in edges_without_capacity)) <=1
+
 
 model.solve()
 
