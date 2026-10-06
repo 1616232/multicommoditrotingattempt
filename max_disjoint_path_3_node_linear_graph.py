@@ -1,13 +1,11 @@
 from pulp import *
 
 edges = [(0, 1, 1), (1, 2, 1)]
-edges_without_capacity = [(0, 1), (1, 2)]
+edges_without_capacity = list(map(lambda e: (e[0], e[1]), edges))
 # edges = []
 commodoties = [(0, 2), (1, 2)]  # source, destination
 vertices = list(range(0, 3))
 
-sum_incoming = [[0] * len(vertices)] * len(commodoties)
-sum_outgoing = [[0] * len(vertices)] * len(commodoties)
 model = LpProblem(name="max-disjoint-paths", sense=LpMaximize)
 # set of variables; total number is edges times commodoties
 # directed or undirected graph?
@@ -18,13 +16,6 @@ for e in edges:
     for c in range(len(commodoties)):
         x[(e[0], e[1], c)] = LpVariable(name=f"x{e[0]}" + f"{e[1]}" + f"{c}", lowBound=0)
         x[(e[1], e[0], c)] = LpVariable(name=f"x{e[1]}" + f"{e[0]}" + f"{c}", lowBound=0)
-
-for v in vertices:
-    for c in range(len(commodoties)):
-        sum_incoming[c][v] = lpSum(x[(i, v, c)] for i in vertices if ((i,v) in edges_without_capacity) or ((v,i) in edges_without_capacity))
-        sum_outgoing[c][v] = lpSum(x[(v, j, c)] for j in vertices if (v,j) in edges_without_capacity )
-
-print(sum_incoming[0][1])
 
 # objective: maximize flows to destination
 model += (
@@ -53,7 +44,8 @@ for k in range(len(commodoties)):
     for v in range(len(vertices)):
         if commodoties[k][1] !=v:
             model += lpSum(x[(i,v,k)] for i in vertices if ((i,v) in edges_without_capacity) or ((v,i) in edges_without_capacity)) <=1
-
+        else:
+            model += lpSum(x[(v,i,k)] for i in vertices if ((i,v) in edges_without_capacity)) == 0
 
 model.solve()
 
