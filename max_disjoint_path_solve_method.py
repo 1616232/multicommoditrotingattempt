@@ -10,8 +10,8 @@ def solve_max_disjoint_path_problem(edges, commodoties, vertices):
     x = {}
     for e in edges:
         for c in range(len(commodoties)):
-            x[(e[0], e[1], c)] = LpVariable(name=f"x{e[0]}" + f"{e[1]}" + f"{c}", lowBound=0)
-            x[(e[1], e[0], c)] = LpVariable(name=f"x{e[1]}" + f"{e[0]}" + f"{c}", lowBound=0)
+            x[(e[0], e[1], c)] = LpVariable(name=f"x{e[0]}" + f"{e[1]}" + f"{c}", cat=LpBinary)
+            x[(e[1], e[0], c)] = LpVariable(name=f"x{e[1]}" + f"{e[0]}" + f"{c}", cat=LpBinary)
             model += x[(e[0], e[1], c)]+x[(e[1], e[0], c)]  <=1
 
     # objective: maximize flows to destination
