@@ -42,13 +42,16 @@ def solve_max_disjoint_path_problem(edges, commodoties, vertices):
             x[(commodoties[k][0], v, k)] for v in vertices if (commodoties[k][0], v) in edges_without_capacity)
     print(model.constraints())
     # to enforce vertex disjoint paths, for each commodity, inflow into a node is capped at 1 unless the node is the destination
-    # flow from the destination is zero for that commodity
+    # flow from the destination is zero for each commodity
+    # flow to the source is zero for each commodity
     for k in range(len(commodoties)):
         for v in range(len(vertices)):
-            if commodoties[k][1] != v:
-                model += lpSum(x[(i, v, k)] for i in vertices if ((i, v) in edges_without_capacity)) <= 1
+            if commodoties[k][1] == v:
+                model += lpSum(x[(v, i, k)] for i in vertices if ((v, i) in edges_without_capacity)) == 0
+            elif commodoties[k][0] == v:
+                model += lpSum(x[(i, v, k)] for i in vertices if ((i, v) in edges_without_capacity)) == 0
             else:
-                model += lpSum(x[(v, i, k)] for i in vertices if ((i, v) in edges_without_capacity)) == 0
+                model += lpSum(x[(i, v, k)] for i in vertices if ((i, v) in edges_without_capacity)) <= 1
     print(model.constraints())
     model.solve()
 
